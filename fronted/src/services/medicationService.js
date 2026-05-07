@@ -1,15 +1,14 @@
+// src/services/medicationService.js
 const API_BASE_URL = 'http://localhost:8080/api/medications';
 
 export const medicationService = {
-    // GET all medications (with pagination)
     getAll: async () => {
         const response = await fetch(`${API_BASE_URL}?page=0&size=100`);
         if (!response.ok) throw new Error('Failed to fetch medications');
         const page = await response.json();
-        return page.content; // Return just the array of medications
+        return page.content;
     },
 
-    // POST new medication
     create: async (medication) => {
         const response = await fetch(API_BASE_URL, {
             method: 'POST',
@@ -20,7 +19,6 @@ export const medicationService = {
         return response.json();
     },
 
-    // PUT update medication
     update: async (id, medication) => {
         const response = await fetch(`${API_BASE_URL}/${id}`, {
             method: 'PUT',
@@ -31,7 +29,6 @@ export const medicationService = {
         return response.json();
     },
 
-    // DELETE medication
     delete: async (id) => {
         const response = await fetch(`${API_BASE_URL}/${id}`, {
             method: 'DELETE',

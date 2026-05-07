@@ -1,44 +1,45 @@
+// src/components/MedicationForm.jsx
 import { useState, useEffect } from 'react';
-import { Button, TextInput, Modal, Stack } from '@mantine/core';
+import { Button, TextInput, Stack } from '@mantine/core';
 
-export function MedicationForm({ opened, onClose, onSave, initialData }) {
+export function MedicationForm({ onSave, onClose, initialData }) {
     const [name, setName] = useState('');
 
     useEffect(() => {
         if (initialData) {
-            setName(initialData.name);
+            setName(initialData.name || '');
         } else {
             setName('');
         }
     }, [initialData]);
 
-    const handleSubmit = () => {
+    const handleSubmit = (e) => {
+        e.preventDefault();
         if (!name.trim()) return;
         onSave({ name: name.trim() });
         onClose();
     };
 
     return (
-        <Modal
-            opened={opened}
-            onClose={onClose}
-            title={initialData ? 'Editează medicament' : 'Adaugă medicament'}
-            centered
-        >
-            <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
-                <Stack>
-                    <TextInput
-                        label="Nume medicament"
-                        placeholder="Ex: Paracetamol"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                    />
-                    <Button type="submit" fullWidth>
-                        {initialData ? 'Actualizează' : 'Salvează'}
+        <form onSubmit={handleSubmit}>
+            <Stack>
+                <TextInput
+                    label="Medication Name"
+                    placeholder="Enter medication name (e.g., Paracetamol, Ibuprofen)"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    autoFocus
+                />
+                <div className="flex gap-3 mt-4">
+                    <Button type="button" variant="light" onClick={onClose} fullWidth>
+                        Cancel
                     </Button>
-                </Stack>
-            </form>
-        </Modal>
+                    <Button type="submit" fullWidth>
+                        {initialData ? 'Update' : 'Add'} Medication
+                    </Button>
+                </div>
+            </Stack>
+        </form>
     );
 }

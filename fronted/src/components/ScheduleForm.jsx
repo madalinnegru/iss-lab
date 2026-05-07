@@ -1,32 +1,22 @@
+// src/components/ScheduleForm.jsx
 import { useState, useEffect } from 'react';
-import {
-    Button,
-    Select,
-    Modal,
-    Stack,
-    TextInput,
-    Group,
-    Badge,
-    Text,
-    ActionIcon,
-    MultiSelect
-} from '@mantine/core';
+import { Button, Select, Stack, Text, Group, Badge, ActionIcon } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 
-// Ore predefinite pentru selecție
+// Ore predefinite pentru selecție (format HH:MM)
 const TIME_OPTIONS = [
     '00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00',
     '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00',
     '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'
 ];
 
-export function ScheduleForm({ opened, onClose, onSave, initialData, medications }) {
+export function ScheduleForm({ onSave, onClose, initialData, medications }) {
     const [medicationId, setMedicationId] = useState('');
     const [scheduledTimes, setScheduledTimes] = useState([]);
 
     useEffect(() => {
         if (initialData) {
-            setMedicationId(initialData.medicationId);
+            setMedicationId(initialData.medicationId || '');
             setScheduledTimes(initialData.scheduledTimes || []);
         } else {
             setMedicationId('');
@@ -42,8 +32,12 @@ export function ScheduleForm({ opened, onClose, onSave, initialData, medications
         }
     };
 
-    const handleSubmit = () => {
-        if (!medicationId || scheduledTimes.length === 0) return;
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!medicationId || scheduledTimes.length === 0) {
+            alert('Please select a medication and at least one time');
+            return;
+        }
         onSave({ medicationId, scheduledTimes });
         onClose();
     };
@@ -55,69 +49,72 @@ export function ScheduleForm({ opened, onClose, onSave, initialData, medications
     }));
 
     return (
-        <Modal
-            opened={opened}
-            onClose={onClose}
-            title={initialData ? 'Editează programarea' : 'Adaugă programare nouă'}
-            size="lg"
-            centered
-        >
-            <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
-                <Stack>
-                    <Select
-                        label="Medicament"
-                        placeholder="Alege medicamentul"
-                        data={medicationOptions}
-                        value={medicationId}
-                        onChange={setMedicationId}
-                        required
-                        searchable
-                    />
+        <form onSubmit={handleSubmit}>
+            <Stack gap="md">
+                <Select
+                    label="Select Medication"
+                    placeholder="Choose a medication from your library"
+                    data={medicationOptions}
+                    value={medicationId}
+                    onChange={setMedicationId}
+                    required
+                    searchable
+                    size="md"
+                />
 
-                    <Text size="sm" fw={500}>Ore administrare (zilnic)</Text>
-                    <Text size="xs" c="dimmed">Selectează orele la care dorești să iei medicamentul:</Text>
+                <div>
+                    <Text size="sm" fw={500} mb="xs">Administration Times (daily)</Text>
+                    <Text size="xs" c="dimmed" mb="md">Click on times to select or deselect:</Text>
 
-                    <Group gap="xs">
+                    <div className="flex flex-wrap gap-2">
                         {TIME_OPTIONS.map((time) => (
                             <Badge
                                 key={time}
-                                variant={scheduledTimes.includes(time) ? 'filled' : 'light'}
+                                variant={scheduledTimes.includes(time) ? 'filled' : 'outline'}
                                 color={scheduledTimes.includes(time) ? 'blue' : 'gray'}
-                                style={{ cursor: 'pointer' }}
+                                className="cursor-pointer hover:opacity-80 transition-all"
+                                style={{ cursor: 'pointer', padding: '8px 12px', fontSize: '14px' }}
                                 onClick={() => toggleTime(time)}
                             >
                                 {time}
                             </Badge>
                         ))}
-                    </Group>
+                    </div>
+                </div>
 
-                    {scheduledTimes.length > 0 && (
-                        <>
-                            <Text size="sm" fw={500}>Ore selectate:</Text>
-                            <Group gap="xs">
-                                {scheduledTimes.map((time) => (
-                                    <Badge
-                                        key={time}
-                                        color="green"
-                                        variant="filled"
-                                        rightSection={
-                                            <ActionIcon size="xs" color="white" onClick={() => toggleTime(time)}>
-                                                <IconX size={12} />
-                                            </ActionIcon>
-                                        }
-                                    >
-                                        {time}
-                                    </Badge>
-                                ))}
-                            </Group>
-                        </>
-                    )}
+                {scheduledTimes.length > 0 && (
+                    <div>
+                        <Text size="sm" fw={500} mb="xs">Selected Times:</Text>
+                        <div className="flex flex-wrap gap-2">
+                            {scheduledTimes.map((time) => (
+                                <Badge
+                                    key={time}
+                                    color="green"
+                                    variant="filled"
+                                    size="lg"
+                                    rightSection={
+                                        <ActionIcon size="xs" color="white" onClick={() => toggleTime(time)}>
+                                            <IconX size={12} />
+                                        </ActionIcon>
+                                    }
+                                    className="cursor-pointer"
+                                >
+                                    {time}
+                                </Badge>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
-                    <Button type="submit" fullWidth mt="md">
-                        {initialData ? 'Actualizează programarea' : 'Salvează programarea'}
+                <div className="flex gap-3 mt-4">
+                    <Button type="button" variant="light" onClick={onClose} fullWidth>
+                        Cancel
                     </Button>
-                </Stack>
-            </form>
-        </Modal>
+                    <Button type="submit" fullWidth>
+                        {initialData ? 'Update Schedule' : 'Add to Schedule'}
+                    </Button>
+                </div>
+            </Stack>
+        </form>
     );
 }
