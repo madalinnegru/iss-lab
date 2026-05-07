@@ -1,123 +1,54 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
-import './index.css'
+import { AppShell, Burger, Group, Title, NavLink } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import { IconPill, IconCalendarTime } from '@tabler/icons-react';
+import { MedicationsPage } from './pages/MedicationsPage';
+import { SchedulePage } from './pages/SchedulePage';
 
 function App() {
-  const [count, setCount] = useState(0)
+    const [opened, { toggle }] = useDisclosure();
+    const location = useLocation();
 
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
+    return (
+        <AppShell
+            header={{ height: 60 }}
+            navbar={{ width: 250, breakpoint: 'sm', collapsed: { mobile: !opened } }}
+            padding="md"
         >
-          Count is {count}
-        </button>
-      </section>
+            <AppShell.Header>
+                <Group h="100%" px="md">
+                    <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+                    <Title order={3}>HealthApp</Title>
+                </Group>
+            </AppShell.Header>
 
-      <div className="ticks"></div>
+            <AppShell.Navbar p="md">
+                <NavLink
+                    component={Link}
+                    to="/"
+                    label="Medicamente"
+                    leftSection={<IconPill size={16} />}
+                    active={location.pathname === '/'}
+                    variant="filled"
+                />
+                <NavLink
+                    component={Link}
+                    to="/schedule"
+                    label="Plan medicamente"
+                    leftSection={<IconCalendarTime size={16} />}
+                    active={location.pathname === '/schedule'}
+                    variant="filled"
+                />
+            </AppShell.Navbar>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+            <AppShell.Main>
+                <Routes>
+                    <Route path="/" element={<MedicationsPage />} />
+                    <Route path="/schedule" element={<SchedulePage />} />
+                </Routes>
+            </AppShell.Main>
+        </AppShell>
+    );
 }
 
-export default App
+export default App;
