@@ -19,8 +19,9 @@ export function SchedulePage() {
                 scheduleService.getUserSchedules(),
                 medicationService.getAll()
             ]);
-            setSchedules(schedulesData);
-            setMedications(medicationsData);
+            console.log('Loaded schedules:', schedulesData); // Debug
+            setSchedules([...schedulesData]); // Force new array
+            setMedications([...medicationsData]);
         } catch (error) {
             console.error('Failed to load data:', error);
         } finally {
@@ -40,11 +41,17 @@ export function SchedulePage() {
     const handleSave = async (scheduleData) => {
         try {
             if (editingSchedule) {
+                console.log('Updating schedule:', editingSchedule.id);
                 await scheduleService.update(editingSchedule.id, scheduleData);
             } else {
+                console.log('Creating schedule');
                 await scheduleService.create(scheduleData);
             }
+
+            // Reîncarcă datele
             await loadData();
+
+            // Închide modalul DIRECT
             setModalOpened(false);
             setEditingSchedule(null);
         } catch (error) {
@@ -66,6 +73,7 @@ export function SchedulePage() {
     };
 
     const handleEdit = (schedule) => {
+        console.log("Edit menu opened for schedule:", schedule);
         setEditingSchedule(schedule);
         setModalOpened(true);
     };
@@ -85,7 +93,7 @@ export function SchedulePage() {
 
     return (
         <main className="pt-24 pb-12 px-6 md:ml-64 max-w-7xl mx-auto">
-            {/* Header Section */}
+            {/* Header Section - la fel */}
             <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
                     <h1 className="text-4xl font-extrabold font-headline tracking-tight text-on-surface mb-2">Medication Schedule</h1>
@@ -127,7 +135,9 @@ export function SchedulePage() {
                             key={medication.scheduleId}
                             medication={medication}
                             onEdit={() => {
-                                const schedule = schedules.find(s => s.medicationId === medication.id);
+                                // Găsește schedule-ul original
+                                const schedule = schedules.find(s => s.id === medication.scheduleId);
+                                console.log('Edit clicked, found schedule:', schedule);
                                 if (schedule) handleEdit(schedule);
                             }}
                             onDelete={() => handleDelete(medication.scheduleId)}
@@ -148,8 +158,8 @@ export function SchedulePage() {
                     <div className="flex items-center gap-2">
                         <span className="material-symbols-outlined text-primary">schedule</span>
                         <span className="font-headline font-bold text-xl">
-              {editingSchedule ? 'Edit Schedule' : 'Add New Schedule'}
-            </span>
+                            {editingSchedule ? 'Edit Schedule' : 'Add New Schedule'}
+                        </span>
                     </div>
                 }
                 size="lg"
@@ -161,6 +171,7 @@ export function SchedulePage() {
                 }}
             >
                 <ScheduleForm
+                    key={editingSchedule?.id || 'new'}  // ← Adaugă această linie!
                     onSave={handleSave}
                     onClose={() => {
                         setModalOpened(false);
