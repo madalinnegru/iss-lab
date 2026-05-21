@@ -93,6 +93,7 @@ export function MedicationsPage() {
                                 medication={medication}
                                 onEdit={handleEdit}
                                 onDelete={handleDelete}
+                                onRefresh={loadMedications}
                             />
                         ))}
                     </>

@@ -10,6 +10,7 @@ import java.util.TimeZone;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
+    @Mapping(target = "password", ignore = true)
     @Mapping(source = "timeZone", target = "timeZone", qualifiedByName = "timeZoneToString")
     UserDTO toDTO(User entity);
 

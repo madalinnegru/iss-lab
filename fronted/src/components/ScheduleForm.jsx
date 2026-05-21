@@ -1,6 +1,6 @@
 // src/components/ScheduleForm.jsx
 import { useState, useEffect } from 'react';
-import { Button, Select, Stack, Text, Group, Badge, ActionIcon } from '@mantine/core';
+import { Button, Stack, Text, Badge, ActionIcon } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 
 // Ore predefinite pentru selecție (format HH:MM)
@@ -10,16 +10,17 @@ const TIME_OPTIONS = [
     '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'
 ];
 
-export function ScheduleForm({ onSave, onClose, initialData, medications }) {
-    const [medicationId, setMedicationId] = useState('');
+export function ScheduleForm({ onSave, onClose, initialData, medicationName }) {
     const [scheduledTimes, setScheduledTimes] = useState([]);
 
     useEffect(() => {
         if (initialData) {
-            setMedicationId(initialData.medicationId || '');
-            setScheduledTimes(initialData.scheduledTimes || []);
+            // Formatorează orele din backend (care vin ca HH:MM:SS) în HH:MM pentru afișare
+            const formattedTimes = (initialData.scheduledTimes || []).map(time => {
+                return time.length === 8 ? time.substring(0, 5) : time;
+            });
+            setScheduledTimes(formattedTimes);
         } else {
-            setMedicationId('');
             setScheduledTimes([]);
         }
     }, [initialData]);
@@ -34,33 +35,34 @@ export function ScheduleForm({ onSave, onClose, initialData, medications }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!medicationId || scheduledTimes.length === 0) {
-            alert('Please select a medication and at least one time');
+        if (scheduledTimes.length === 0) {
+            alert('Please select at least one time');
             return;
         }
-        onSave({ medicationId, scheduledTimes });
-        onClose();
-    };
 
-    // Pregătește opțiunile pentru select
-    const medicationOptions = medications.map(med => ({
-        value: med.id,
-        label: med.name
-    }));
+        // Transformă orele din HH:MM în HH:MM:SS pentru backend
+        const formattedTimes = scheduledTimes.map(time => {
+            if (time.length === 5 && time.includes(':')) {
+                return `${time}:00`;
+            }
+            return time;
+        });
+
+        onSave({
+            scheduledTimes: formattedTimes
+        });
+    };
 
     return (
         <form onSubmit={handleSubmit}>
             <Stack gap="md">
-                <Select
-                    label="Select Medication"
-                    placeholder="Choose a medication from your library"
-                    data={medicationOptions}
-                    value={medicationId}
-                    onChange={setMedicationId}
-                    required
-                    searchable
-                    size="md"
-                />
+                {medicationName && (
+                    <div className="mb-4 p-3 bg-primary-container/10 rounded-lg">
+                        <Text size="sm" fw={500} c="primary">
+                            Medication: {medicationName}
+                        </Text>
+                    </div>
+                )}
 
                 <div>
                     <Text size="sm" fw={500} mb="xs">Administration Times (daily)</Text>

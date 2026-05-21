@@ -5,11 +5,12 @@ import { ScheduleForm } from './ScheduleForm';
 import { scheduleService } from '../services/scheduleService';
 import { medicationService } from '../services/medicationService';
 
-export function MedicationCard({ medication, onEdit, onDelete, isSchedule = false, medicationsList = [] }) {
+export function MedicationCard({ medication, onEdit, onDelete, onRefresh, isSchedule = false, medicationsList = [] }) {
     const [showScheduleModal, setShowScheduleModal] = useState(false);
     const [editingScheduleData, setEditingScheduleData] = useState(null);
 
-    const handleAddToSchedule = () => {
+    const handleAddToSchedule = (e) => {
+        e.stopPropagation();
         setEditingScheduleData(null);
         setShowScheduleModal(true);
     };
@@ -25,18 +26,21 @@ export function MedicationCard({ medication, onEdit, onDelete, isSchedule = fals
     const handleSaveSchedule = async (scheduleData) => {
         try {
             if (editingScheduleData) {
-                // Update existing schedule - need to find the schedule ID
-                // For now, we'll assume we have the schedule ID from props
                 if (medication.scheduleId) {
-                    await scheduleService.update(medication.scheduleId, scheduleData);
+                    await scheduleService.update(medication.scheduleId, {
+                        ...scheduleData,
+                        medicationId: medication.id
+                    });
                 }
             } else {
-                // Create new schedule
-                await scheduleService.create(scheduleData);
+                await scheduleService.create({
+                    ...scheduleData,
+                    medicationId: medication.id
+                });
             }
             setShowScheduleModal(false);
             setEditingScheduleData(null);
-            if (onEdit) onEdit(); // Refresh the page
+            if (onRefresh) onRefresh(); // ← use a dedicated refresh callback
         } catch (error) {
             console.error('Failed to save schedule:', error);
         }
@@ -96,7 +100,7 @@ export function MedicationCard({ medication, onEdit, onDelete, isSchedule = fals
                     ) : (
                         <>
                             <button
-                                onClick={handleEditSchedule}
+                                onClick={() => onEdit(medication)}
                                 className="flex-1 text-primary font-headline font-bold text-sm py-2 px-4 rounded-lg bg-primary-container/10 hover:bg-primary-container/20 transition-colors"
                             >
                                 Edit Times
