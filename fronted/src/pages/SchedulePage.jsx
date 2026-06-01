@@ -101,13 +101,6 @@ export function SchedulePage() {
                         Your daily medication plan - add medications and set administration times
                     </p>
                 </div>
-                <button
-                    onClick={handleAdd}
-                    className="bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-4 rounded-full font-headline font-bold flex items-center gap-3 transition-transform active:scale-95 shadow-[0_8px_24px_rgba(0,64,168,0.15)] hover:opacity-90"
-                >
-                    <span className="material-symbols-outlined">add</span>
-                    Add Schedule
-                </button>
             </div>
 
             {/* Schedule List */}
@@ -119,14 +112,7 @@ export function SchedulePage() {
                         <div className="flex flex-col items-center gap-4">
                             <span className="material-symbols-outlined text-6xl text-outline">schedule</span>
                             <h3 className="font-headline text-xl font-bold text-on-surface">No medications scheduled yet</h3>
-                            <p className="text-on-surface-variant">Click the "Add Schedule" button to add medications to your daily plan</p>
-                            <button
-                                onClick={handleAdd}
-                                className="mt-4 bg-primary text-on-primary px-6 py-3 rounded-full font-headline font-bold flex items-center gap-2 hover:opacity-90 transition-all"
-                            >
-                                <span className="material-symbols-outlined">add</span>
-                                Add Your First Schedule
-                            </button>
+                            <p className="text-on-surface-variant">Click the "Add To Schedule" button in the <a className="underline underline-offset-2 hover:text-primary" href="/medications">Medications</a> tab to add medications to your daily plan</p>
                         </div>
                     </div>
                 ) : (

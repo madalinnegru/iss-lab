@@ -1,0 +1,55 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: iss-db
+    environment:
+      POSTGRES_DB: iss
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Parola1234!
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d iss"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - iss-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: iss-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_DATASOURCE_URL: jdbc:postgresql://postgres:5432/iss
+      POSTGRES_DATASOURCE_USERNAME: postgres
+      POSTGRES_DATASOURCE_PASSWORD: Parola1234!
+    ports:
+      - "8080:8080"
+    networks:
+      - iss-network
+
+  frontend:
+    build:
+      context: ./fronted
+      dockerfile: Dockerfile
+    container_name: iss-frontend
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+    networks:
+      - iss-network
+
+volumes:
+  postgres_data:
+
+networks:
+  iss-network:
+    driver: bridge

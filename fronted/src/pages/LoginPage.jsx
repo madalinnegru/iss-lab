@@ -103,9 +103,6 @@ const LoginPage = () => {
                                 <label className="font-label text-xs font-semibold uppercase tracking-wider text-on-surface-variant" htmlFor="password">
                                     Password
                                 </label>
-                                <Link to="/forgot-password" className="text-xs font-semibold text-primary hover:text-primary-container transition-colors">
-                                    Forgot?
-                                </Link>
                             </div>
                             <div className="relative">
                 <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant text-xl">

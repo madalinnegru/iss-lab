@@ -4,8 +4,6 @@ const navItems = [
     { path: '/home', icon: 'dashboard', label: 'Dashboard' },
     { path: '/medications', icon: 'pill', label: 'Medications' },
     { path: '/schedule', icon: 'schedule', label: 'Med Schedule' },
-    { path: '/notifications', icon: 'notifications', label: 'Notifications' },
-    { path: '/settings', icon: 'settings', label: 'Settings' },
 ];
 
 export function SideNavBar() {
